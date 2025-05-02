@@ -127,7 +127,7 @@ pheatmap(mat, show_rownames=TRUE,
 
 sampleDists <- dist(t(assay(vsd)))
 sampleDistMatrix <- as.matrix(sampleDists)
-rownames(sampleDistMatrix) <- paste(vsd$genotype, sep="-")
+rownames(sampleDistMatrix) <- paste(vsd$genotype, vsd$condition,sep="-")
 colnames(sampleDistMatrix) <- NULL
 colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
 
