@@ -1,7 +1,7 @@
 SAMPLE,Condition,Genotype,Replicate,FilenameBase
-Del_Azole_1,Azole,del182,1,LCS9552_Azole_182_1_Clean_Data
-Del_Azole_2,Azole,del182,2,LCS9552_Azole_182_2_Clean_Data
-Del_Azole_3,Azole,del182,3,LCS9552_Azole_182_3_Clean_Data
+Del_Azole_1,Azole,Del,1,LCS9552_Azole_182_1_Clean_Data
+Del_Azole_2,Azole,Del,2,LCS9552_Azole_182_2_Clean_Data
+Del_Azole_3,Azole,Del,3,LCS9552_Azole_182_3_Clean_Data
 WT_Azole_1,Azole,WT,1,LCS9552_CEA10_Azole_1_Clean_Data
 WT_Azole_2,Azole,WT,2,LCS9552_CEA10_Azole_2_Clean_Data
 WT_Azole_3,Azole,WT,3,LCS9552_CEA10_Azole_3_Clean_Data
@@ -14,9 +14,9 @@ Comp_Azole_3,Azole,Comp,3,LCS9552_Comp_Azole_3_Clean_Data
 Comp_GMM_1,GMM,Comp,1,LCS9552_Comp_GMM_1_Clean_Data
 Comp_GMM_2,GMM,Comp,2,LCS9552_Comp_GMM_2_Clean_Data
 Comp_GMM_3,GMM,Comp,3,LCS9552_Comp_GMM_3_Clean_Data
-Del_GMM_1,GMM,del182,1,LCS9552_GMM_182_1_Clean_Data
-Del_GMM_2,GMM,del182,2,LCS9552_GMM_182_2_Clean_Data
-Del_GMM_3,GMM,del182,3,LCS9552_GMM_182_3_Clean_Data
+Del_GMM_1,GMM,Del,1,LCS9552_GMM_182_1_Clean_Data
+Del_GMM_2,GMM,Del,2,LCS9552_GMM_182_2_Clean_Data
+Del_GMM_3,GMM,Del,3,LCS9552_GMM_182_3_Clean_Data
 OE_Azole_1,Azole,OE,1,LCS9552_OE_182_Azole_1_Clean_Data
 OE_Azole_2,Azole,OE,2,LCS9552_OE_182_Azole_2_Clean_Data
 OE_Azole_3,Azole,OE,3,LCS9552_OE_182_Azole_3_Clean_Data
