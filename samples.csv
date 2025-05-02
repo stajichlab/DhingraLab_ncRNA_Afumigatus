@@ -8,9 +8,9 @@ WT_Azole_3,Azole,WT,3,LCS9552_CEA10_Azole_3_Clean_Data
 WT_GMM_1,GMM,WT,1,LCS9552_CEA10_GMM_1_Clean_Data
 WT_GMM_2,GMM,WT,2,LCS9552_CEA10_GMM_2_Clean_Data
 WT_GMM_3,GMM,WT,3,LCS9552_CEA10_GMM_3_Clean_Data
-Comp_Azole_1,Azole,OE,1,LCS9552_Comp_Azole_1_Clean_Data
-Comp_Azole_2,Azole,OE,2,LCS9552_Comp_Azole_2_Clean_Data
-Comp_Azole_3,Azole,OE,3,LCS9552_Comp_Azole_3_Clean_Data
+Comp_Azole_1,Azole,Comp,1,LCS9552_Comp_Azole_1_Clean_Data
+Comp_Azole_2,Azole,Comp,2,LCS9552_Comp_Azole_2_Clean_Data
+Comp_Azole_3,Azole,Comp,3,LCS9552_Comp_Azole_3_Clean_Data
 Comp_GMM_1,GMM,Comp,1,LCS9552_Comp_GMM_1_Clean_Data
 Comp_GMM_2,GMM,Comp,2,LCS9552_Comp_GMM_2_Clean_Data
 Comp_GMM_3,GMM,Comp,3,LCS9552_Comp_GMM_3_Clean_Data
