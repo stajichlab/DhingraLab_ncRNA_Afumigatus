@@ -12,6 +12,7 @@ library(fdrtool)
 library(geneplotter)
 library(EDASeq)
 library(tidyverse)
+library(EnhancedVolcano)
 my_pal2 = mypal2 <- colorRampPalette(brewer.pal(6, "YlOrRd"))
 
 countdata <- read.table("results/read_count_A1163.tsv", header=TRUE, row.names=1)
@@ -127,11 +128,12 @@ p<- ggplot(pcaData, aes(PC1, PC2, color=genotype,shape=treatment,label=treatment
 ggsave("plots/PCA_expression.pdf",p)
 
 # only look at one treatment (growth condition) at a time contrast genotypes
+
 calcPlotPairwiseCondition <- function(c) {
   c=unique(sampleTable$condition)[1]
   sampleTablePair = sampleTable %>% dplyr::filter(condition == c)
   print(sampleTablePair)
-  pdf(sprintf("plots/RNASeq_%s_contrastGenotype.pdf",c))
+  pdf(sprintf("plots/RNASeq_%s_contrastCondition.pdf",c))
   genes = rownames(countdata)
   countdataPair <- as.data.frame(as_tibble(countdata) %>% dplyr::select(contains(sprintf('_%s_',c))))
   
@@ -166,8 +168,9 @@ calcPlotPairwiseCondition <- function(c) {
   select <- order(rowMeans(counts(ddsAll,normalized=TRUE)),
                   decreasing=TRUE)[1:50]
 
-  MA.idx = t(combn(1:4, 2))
-  for( i in  seq_along( MA.idx[,1])){ 
+  MA.idx = t(combn(1:24, 2))
+  for( i in  seq_along( MA.idx[,1])) {
+    print(sprintf ( "%s vs %s",colnames(dds)[MA.idx[i,1]], colnames(dds)[MA.idx[i,2]]))
     MDPlot(counts(dds, normalized = T), 
           c(MA.idx[i,1],MA.idx[i,2]), 
           main = paste( colnames(dds)[MA.idx[i,1]], " vs ",
@@ -253,6 +256,12 @@ calcPlotPairwiseCondition <- function(c) {
     dev.off()
     write.csv(resSig,sprintf("reports/%s_%s.csv",c,coefcompare))
     write.csv(fpm(dds),sprintf("reports/%s_allGeno_FPM.csv",c))
+    
+    p<-EnhancedVolcano(resLFC,
+                    lab = rownames(resLFC),
+                    x = 'log2FoldChange',
+                    y = 'pvalue')
+    ggsave(sprintf("plots/%s_%s.volcano.pdf",c,coefcompare),p)
   }
 }
 
@@ -388,6 +397,8 @@ calcPlotPairwiseGenotype <- function(g) {
   write.csv(resSig,sprintf("reports/%s_%s.csv",g,resultsNames(dds)[2]))
   write.csv(fpm(dds),sprintf("reports/%s_allConditions_FPM.csv",g))
   dev.off()
+  
+  
 }
 lapply(unique(sampleTable$condition),calcPlotPairwiseCondition)
 lapply(unique(sampleTable$genotype),calcPlotPairwiseGenotype)
