@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
-
+LABELSIZE=4.0
+PCUTOFF=1e-10
+FCCHANGE=2.0
 # Here is a list of volcano plots:
 
 # 1. WT vs de
@@ -81,19 +83,21 @@ ddsGMM <- estimateDispersions(ddsGMM)
 rld <- rlogTransformation(ddsGMM)
 ddsGMM <- DESeq(ddsGMM)
 sizeFactors(ddsGMM)
-
+write_tsv(as_tibble(counts(ddsGMM, normalize = TRUE),rownames = 'TRANSCRIPT'),
+          'results/GMM.Genotypes_normalized_counts.tsv')
 res <- results(ddsGMM)
 
 res <- results(ddsGMM,
                contrast = c('genotype', 'WT','Del'))
 res <- lfcShrink(ddsGMM,
                  contrast = c('genotype','WT','Del'), res=res, type = 'ashr')
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
 
 p<-EnhancedVolcano(res,
-                   FCcutoff = 2, 
-                   pCutoff = 1e-10,
-                   labSize = 3.0,
+                   FCcutoff = FCCHANGE, 
+                   pCutoff = PCUTOFF,
+                   labSize = LABELSIZE,
+                   labFace = 'bold',
                   lab = rownames(res),
                   x = 'log2FoldChange',
                   title = 'WT versus Delta',
@@ -101,45 +105,42 @@ p<-EnhancedVolcano(res,
                   colAlpha = 1,
                   y = 'pvalue'
                   )
-p
 ggsave("plots/Volcano.GMM.WT-vs-Delta.pdf",p,width=16,height=12)
 
 best_genes <- res_tbl %>%
   arrange(padj)  %>%
   head(9)
-write_tsv(res_tbl,"results/GMM.tsv")
+write_tsv(res_tbl,"results/GMM.Genotypes.tsv")
 
-p <- as_tibble(counts(ddsGMM[best_genes$ENSEMBL, ], normalize = TRUE),
-               rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsGMM[best_genes$TRANSCRIPT, ], normalize = TRUE),
+               rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableGMM, rownames = "sample")) %>% 
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
 
-p
 ggsave("plots/barPlot.GMM.top_9.pdf",p,width=16,height=12)
 
-p <- as_tibble(counts(ddsGMM[best_genes$ENSEMBL, ], normalize = TRUE),
-          rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsGMM[best_genes$TRANSCRIPT, ], normalize = TRUE),
+          rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableGMM, rownames = "sample")) %>% 
   filter(genotype %in% c('WT', 'Del')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
 
-p
 ggsave("plots/barPlot.GMM.top_9_WT_v_Delta.pdf",p,width=16,height=12)
 
 
@@ -147,33 +148,33 @@ res <- results(ddsGMM,
                contrast = c('genotype', 'WT','Comp'))
 res <- lfcShrink(ddsGMM,
                  contrast = c('genotype','WT','Comp'), res=res, type = 'ashr')
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
 p<-EnhancedVolcano(res,
-                   FCcutoff = 2, 
-                   pCutoff = 1e-10,
-                   labSize = 3.0,
-                lab = rownames(res),
-                x = 'log2FoldChange',
-                title = 'WT versus Comp',
-                legendPosition = 'right',
-                y = 'pvalue')
+                   FCcutoff = FCCHANGE, 
+                   pCutoff = PCUTOFF,
+                   labSize = LABELSIZE,
+                   labFace = 'bold',
+                   lab = rownames(res),
+                   x = 'log2FoldChange',
+                   title = 'WT versus Comp',
+                   legendPosition = 'right',
+                   y = 'pvalue')
 
 ggsave("plots/Volcano.GMM.WT-vs-Comp.pdf",p,width=16,height=12)
-p <- as_tibble(counts(ddsGMM[best_genes$ENSEMBL, ], normalize = TRUE),
-               rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsGMM[best_genes$TRANSCRIPT, ], normalize = TRUE),
+               rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableGMM, rownames = "sample")) %>% 
   filter(genotype %in% c('WT', 'Comp')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
 
-p
 ggsave("plots/barPlot.GMM.top_9_WT_v_Comp.pdf",p,width=16,height=12)
 
 
@@ -181,32 +182,33 @@ res <- results(ddsGMM,
                contrast = c('genotype', 'WT','OE'))
 res <- lfcShrink(ddsGMM,
                  contrast = c('genotype','WT','OE'), res=res, type = 'ashr')
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
 p <- EnhancedVolcano(res,
                 lab = rownames(res),
                 x = 'log2FoldChange',
-                FCcutoff = 2, 
-                pCutoff = 1e-10,
-                labSize = 3.0,
+                FCcutoff = FCCHANGE, 
+                pCutoff = PCUTOFF,
+                labSize = LABELSIZE,
+                labFace = 'bold',
                 title = 'WT versus OverExpression',
                 legendPosition = 'right',
                 y = 'pvalue')
 
 ggsave("plots/Volcano.GMM.WT-vs-OE.pdf",p,width=16,height=12)
-p <- as_tibble(counts(ddsGMM[best_genes$ENSEMBL, ], normalize = TRUE),
-               rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsGMM[best_genes$TRANSCRIPT, ], normalize = TRUE),
+               rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableGMM, rownames = "sample")) %>% 
   filter(genotype %in% c('WT', 'OE')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
-p
+
 ggsave("plots/barPlot.GMM.top_9_WT_v_OE.pdf",p,width=16,height=12)
 # 1. WT vs de
 # 2. Wt vs comp
@@ -231,11 +233,14 @@ ddsWT <- DESeqDataSetFromMatrix(countData = countdataWT,
 nrow(ddsWT)
 ddsWT <- ddsWT[ rowSums(counts(ddsWT)) > 1, ]
 nrow(ddsWT)
+
 ddsWT <- estimateSizeFactors(ddsWT)
 ddsWT <- estimateDispersions(ddsWT)
 sizeFactors(ddsWT)
 
 ddsWT <- DESeq(ddsWT)
+write_tsv(as_tibble(counts(ddsWT, normalize = TRUE),rownames = 'TRANSCRIPT'),
+          'results/WT.GMM_v_Azole.normalized_counts.tsv')
 res <- results(ddsWT)
 
 # 4. WT GMM vs WT drug
@@ -245,38 +250,39 @@ res <- results(ddsWT,
 
 res <- lfcShrink(ddsWT,
                  contrast = c('condition','GMM','Azole'), res=res, type = 'ashr')
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
-                   FCcutoff = 2, 
-                   pCutoff = 1e-10,
-                   labSize = 3.0,
+                   FCcutoff = FCCHANGE, 
+                   pCutoff = PCUTOFF,
+                   labSize = LABELSIZE,
+                   labFace = 'bold',
                    title = 'WT GMM versus Azole',
                    legendPosition = 'right',
                    y = 'pvalue')
 
 ggsave("plots/Volcano.WT_GMM-vs-Azole.pdf",p,width=16,height=12)
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
 best_genes <- res_tbl %>%
   arrange(padj)  %>%
   head(9)
-write_tsv(res_tbl,"results/WT.tsv")
+write_tsv(res_tbl,"results/WT.GMM_v_Azole.tsv")
 
-p <- as_tibble(counts(ddsWT[best_genes$ENSEMBL, ], normalize = TRUE),
-               rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsWT[best_genes$TRANSCRIPT, ], normalize = TRUE),
+               rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableWT, rownames = "sample")) %>% 
   filter(condition %in% c('GMM', 'Azole')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
-p
+
 ggsave("plots/barPlot.WT.top_9_GMM_v_Azole.pdf",p,width=16,height=12)
 #==
 # 5. delta GMM vs delta drug
@@ -296,6 +302,8 @@ nrow(ddsDel)
 ddsDel <- estimateSizeFactors(ddsDel)
 ddsDel <- estimateDispersions(ddsDel)
 sizeFactors(ddsDel)
+write_tsv(as_tibble(counts(ddsDel, normalize = TRUE),rownames = 'TRANSCRIPT'),
+          'results/Delta.GMM_v_Azole.normalized_counts.tsv')
 
 ddsDel <- DESeq(ddsDel)
 res <- results(ddsDel)
@@ -307,13 +315,14 @@ res <- results(ddsDel,
 
 res <- lfcShrink(ddsDel,
                  contrast = c('condition','GMM','Azole'), res=res, type = 'ashr')
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
-                   FCcutoff = 2, 
-                   pCutoff = 1e-10,
-                   labSize = 3.0,
+                   FCcutoff = FCCHANGE, 
+                   pCutoff = PCUTOFF,
+                   labSize = LABELSIZE,
+                   labFace = 'bold',
                    title = 'Del GMM versus Azole',
                    legendPosition = 'right',
                    y = 'pvalue')
@@ -324,22 +333,22 @@ ggsave("plots/Volcano.Del_GMM-vs-Azole.pdf",p,width=16,height=12)
 best_genes <- res_tbl %>%
   arrange(padj)  %>%
   head(9)
-write_tsv(res_tbl,"results/Delta.tsv")
+write_tsv(res_tbl,"results/Delta.GMM_v_Azole.tsv")
 
-p <- as_tibble(counts(ddsDel[best_genes$ENSEMBL, ], normalize = TRUE),
-               rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsDel[best_genes$TRANSCRIPT, ], normalize = TRUE),
+               rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableDel, rownames = "sample")) %>% 
   filter(condition %in% c('GMM', 'Azole')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
-p
+
 ggsave("plots/barPlot.Delta.top_9_GMM_v_Azole.pdf",p,width=16,height=12)
 # 5. WT drug vs del drug
 # 6. Wt drug vs comp drug
@@ -363,6 +372,9 @@ ddsAzole <- estimateSizeFactors(ddsAzole)
 ddsAzole <- estimateDispersions(ddsAzole)
 sizeFactors(ddsAzole)
 
+write_tsv(as_tibble(counts(ddsAzole, normalize = TRUE),rownames = 'TRANSCRIPT'),
+          'results/Azole.Genotype_compare.normalized_counts.tsv')
+
 ddsAzole <- DESeq(ddsAzole)
 res <- results(ddsAzole)
 
@@ -371,93 +383,92 @@ res <- results(ddsAzole,
 res <- lfcShrink(ddsAzole,
                  contrast = c('genotype','WT','Del'), res=res, type = 'ashr')
 
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
 #selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
-                   FCcutoff = 2, 
-                   pCutoff = 1e-10,
-                   labSize = 3.0,
+                   FCcutoff = FCCHANGE, 
+                   pCutoff = PCUTOFF,
+                   labSize = LABELSIZE,
+                   labFace = 'bold',
                    selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
                    title = 'Azole WT versus Delta',
                    y = 'pvalue',
                    legendPosition = 'right',
                    labCol = 'goldenrod',
-                   labFace = 'bold',
                    drawConnectors = TRUE,
                    widthConnectors = 0.5,
                    colAlpha = 4/5,
                   )
-p
 
 ggsave("plots/Volcano.Azole.WT-vs-Delta.callOut.pdf",p,width=16,height=12)
 
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
-                   FCcutoff = 2, 
-                   pCutoff = 1e-10,
-                   labSize = 3.0,
-                   selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
+                   FCcutoff = FCCHANGE, 
+                   pCutoff = PCUTOFF,
+                   labSize = LABELSIZE,
+                   labFace = 'bold',
                    title = 'Azole WT versus Delta',
                    y = 'pvalue',
                    legendPosition = 'right')
-p
 
 ggsave("plots/Volcano.Azole.WT-vs-Delta.pdf",p,width=16,height=12)
 
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
 best_genes <- res_tbl %>%
   arrange(padj)  %>%
   head(9)
 
 write_tsv(res_tbl,"results/Azole.WT-vs-Delta.tsv")
 
-
-p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
-               rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsAzole[best_genes$TRANSCRIPT, ], normalize = TRUE),
+               rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableAzole, rownames = "sample")) %>% 
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
-p
+
 ggsave("plots/barPlot.Azole.top_9.pdf",p,width=16,height=12)
 
-p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
-               rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsAzole[best_genes$TRANSCRIPT, ], normalize = TRUE),
+               rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableAzole, rownames = "sample")) %>% 
   filter(genotype %in% c('WT', 'Del')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
-p
+
 ggsave("plots/barPlot.Azole.top_9_WT_v_Delta.pdf",p,width=16,height=12)
 
 res <- results(ddsAzole,
                contrast = c('genotype', 'WT','Comp'))
 res <- lfcShrink(ddsAzole,
                  contrast = c('genotype','WT','Comp'), res=res, type = 'ashr')
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
+write_tsv(res_tbl,"results/Azole.WT-vs-Comp.tsv")
 
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
-                   FCcutoff = 2, 
-                   pCutoff = 1e-10,
-                   labSize = 3.0,
+                   FCcutoff = FCCHANGE, 
+                   pCutoff = PCUTOFF,
+                   labSize = LABELSIZE,
+                   labFace = 'bold',
                    title = 'Azole WT versus Comp',
                    legendPosition = 'right',
                    y = 'pvalue')
@@ -467,11 +478,11 @@ ggsave("plots/Volcano.Azole.WT-vs-Comp.pdf",p,width=16,height=12)
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
-                   FCcutoff = 2, 
-                   pCutoff = 1e-10,
-                   labSize = 3.0,
-                   labCol = 'goldenrod',
+                   FCcutoff = FCCHANGE, 
+                   pCutoff = PCUTOFF,
+                   labSize = LABELSIZE,
                    labFace = 'bold',
+                   labCol = 'goldenrod',
                    title = 'Azole WT versus Comp',
                    selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
                    legendPosition = 'right',
@@ -479,34 +490,35 @@ p<-EnhancedVolcano(res,
 
 ggsave("plots/Volcano.Azole.WT-vs-Comp.callOut.pdf",p,width=16,height=12)
 
-p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
-               rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsAzole[best_genes$TRANSCRIPT, ], normalize = TRUE),
+               rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableAzole, rownames = "sample")) %>% 
   filter(genotype %in% c('WT', 'Comp')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
-p
+
 ggsave("plots/barPlot.Azole.top_9_WT_v_Comp.pdf",p,width=16,height=12)
 
 res <- results(ddsAzole,
                contrast = c('genotype', 'WT','OE'))
 res <- lfcShrink(ddsAzole,
                  contrast = c('genotype','WT','OE'), res=res, type = 'ashr')
-res_tbl <- as_tibble(res, rownames = "ENSEMBL")
-
+res_tbl <- as_tibble(res, rownames = "TRANSCRIPT")
+write_tsv(res_tbl,"results/Azole.WT-vs-OE.tsv")
 p <- EnhancedVolcano(res,
                      lab = rownames(res),
                      x = 'log2FoldChange',
-                     FCcutoff = 2, 
-                     pCutoff = 1e-10,
-                     labSize = 3.0,
+                     FCcutoff = FCCHANGE, 
+                     pCutoff = PCUTOFF,
+                     labSize = LABELSIZE,
+                     labFace = 'bold',
                      title = 'Azole WT versus OverExpression',
                      legendPosition = 'right',
                      y = 'pvalue')
@@ -516,11 +528,11 @@ ggsave("plots/Volcano.Azole.WT-vs-OE.pdf",p,width=16,height=12)
 p <- EnhancedVolcano(res,
                      lab = rownames(res),
                      x = 'log2FoldChange',
-                     FCcutoff = 2, 
-                     pCutoff = 1e-10,
-                     labSize = 3.0,
-                     labCol = 'goldenrod',
+                     FCcutoff = FCCHANGE, 
+                     pCutoff = PCUTOFF,
+                     labSize = LABELSIZE,
                      labFace = 'bold',
+                     labCol = 'goldenrod',
                      title = 'Azole WT versus OverExpression',
                      selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
                      legendPosition = 'right',
@@ -528,19 +540,19 @@ p <- EnhancedVolcano(res,
 
 ggsave("plots/Volcano.Azole.WT-vs-OE.callOut.pdf",p,width=16,height=12)
 
-p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
-               rownames = 'ENSEMBL') %>% 
-  pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
+p <- as_tibble(counts(ddsAzole[best_genes$TRANSCRIPT, ], normalize = TRUE),
+               rownames = 'TRANSCRIPT') %>% 
+  pivot_longer(names_to = "sample", values_to = "counts", -TRANSCRIPT) %>%  
   left_join(as_tibble(sampleTableAzole, rownames = "sample")) %>% 
   filter(genotype %in% c('WT', 'OE')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
-  facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
+  facet_wrap( ~ TRANSCRIPT, scales = "free", ncol = 3) +
   theme(axis.text.x = element_text(size = 7, angle = 90),
         axis.title.x = element_blank(),
         legend.position = "right",
         legend.text = element_text(size = 7),
         legend.title = element_text(size = 7))
-p
+
 ggsave("plots/barPlot.Azole.top_9_WT_v_OE.pdf",p,width=16,height=12)
 
