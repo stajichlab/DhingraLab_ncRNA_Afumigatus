@@ -353,6 +353,7 @@ res <- results(ddsAzole,
                contrast = c('genotype', 'WT','Del'))
 res <- lfcShrink(ddsAzole,
                  contrast = c('genotype','WT','Del'), res=res, type = 'ashr')
+
 res_tbl <- as_tibble(res, rownames = "ENSEMBL")
 #selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
 p<-EnhancedVolcano(res,
@@ -416,7 +417,7 @@ p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
                rownames = 'ENSEMBL') %>% 
   pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
   left_join(as_tibble(sampleTableAzole, rownames = "sample")) %>% 
-  filter(condition %in% c('WT', 'Del')) %>%
+  filter(genotype %in% c('WT', 'Del')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
   facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
@@ -446,7 +447,7 @@ p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
                rownames = 'ENSEMBL') %>% 
   pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
   left_join(as_tibble(sampleTableAzole, rownames = "sample")) %>% 
-  filter(condition %in% c('WT', 'Comp')) %>%
+  filter(genotype %in% c('WT', 'Comp')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
   facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
@@ -476,7 +477,7 @@ p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
                rownames = 'ENSEMBL') %>% 
   pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
   left_join(as_tibble(sampleTableAzole, rownames = "sample")) %>% 
-  filter(condition %in% c('WT', 'OE')) %>%
+  filter(genotype %in% c('WT', 'OE')) %>%
   ggplot(aes(x = sample, y = counts, fill = genotype)) +
   geom_bar(stat = 'identity', color = "gray30") +
   facet_wrap( ~ ENSEMBL, scales = "free", ncol = 3) +
