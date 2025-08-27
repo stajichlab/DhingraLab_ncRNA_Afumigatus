@@ -451,6 +451,19 @@ res <- results(ddsAzole,
 res <- lfcShrink(ddsAzole,
                  contrast = c('genotype','WT','Comp'), res=res, type = 'ashr')
 res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+
+p<-EnhancedVolcano(res,
+                   lab = rownames(res),
+                   x = 'log2FoldChange',
+                   FCcutoff = 2, 
+                   pCutoff = 1e-10,
+                   labSize = 3.0,
+                   title = 'Azole WT versus Comp',
+                   legendPosition = 'right',
+                   y = 'pvalue')
+
+ggsave("plots/Volcano.Azole.WT-vs-Comp.pdf",p,width=16,height=12)
+
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
@@ -464,7 +477,7 @@ p<-EnhancedVolcano(res,
                    legendPosition = 'right',
                    y = 'pvalue')
 
-ggsave("plots/Volcano.Azole.WT-vs-Comp.pdf",p,width=6,height=8)
+ggsave("plots/Volcano.Azole.WT-vs-Comp.callOut.pdf",p,width=16,height=12)
 
 p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
                rownames = 'ENSEMBL') %>% 
@@ -487,6 +500,19 @@ res <- results(ddsAzole,
 res <- lfcShrink(ddsAzole,
                  contrast = c('genotype','WT','OE'), res=res, type = 'ashr')
 res_tbl <- as_tibble(res, rownames = "ENSEMBL")
+
+p <- EnhancedVolcano(res,
+                     lab = rownames(res),
+                     x = 'log2FoldChange',
+                     FCcutoff = 2, 
+                     pCutoff = 1e-10,
+                     labSize = 3.0,
+                     title = 'Azole WT versus OverExpression',
+                     legendPosition = 'right',
+                     y = 'pvalue')
+
+ggsave("plots/Volcano.Azole.WT-vs-OE.pdf",p,width=16,height=12)
+
 p <- EnhancedVolcano(res,
                      lab = rownames(res),
                      x = 'log2FoldChange',
@@ -500,7 +526,7 @@ p <- EnhancedVolcano(res,
                      legendPosition = 'right',
                      y = 'pvalue')
 
-ggsave("plots/Volcano.Azole.WT-vs-OE.pdf",p,width=16,height=12)
+ggsave("plots/Volcano.Azole.WT-vs-OE.callOut.pdf",p,width=16,height=12)
 
 p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
                rownames = 'ENSEMBL') %>% 
