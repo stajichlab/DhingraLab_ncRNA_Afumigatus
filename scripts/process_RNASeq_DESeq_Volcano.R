@@ -91,12 +91,13 @@ res <- lfcShrink(ddsGMM,
 res_tbl <- as_tibble(res, rownames = "ENSEMBL")
 
 p<-EnhancedVolcano(res,
-                   FCcutoff = 0.5,
-                   pointSize = 2.0,
-                   labSize = 6.0,
+                   FCcutoff = 2, 
+                   pCutoff = 1e-10,
+                   labSize = 3.0,
                   lab = rownames(res),
                   x = 'log2FoldChange',
                   title = 'WT versus Delta',
+                  legendPosition = 'right',
                   colAlpha = 1,
                   y = 'pvalue'
                   )
@@ -148,12 +149,16 @@ res <- lfcShrink(ddsGMM,
                  contrast = c('genotype','WT','Comp'), res=res, type = 'ashr')
 res_tbl <- as_tibble(res, rownames = "ENSEMBL")
 p<-EnhancedVolcano(res,
+                   FCcutoff = 2, 
+                   pCutoff = 1e-10,
+                   labSize = 3.0,
                 lab = rownames(res),
                 x = 'log2FoldChange',
                 title = 'WT versus Comp',
+                legendPosition = 'right',
                 y = 'pvalue')
 
-ggsave("plots/Volcano.GMM.WT-vs-Comp.pdf",p,width=6,height=8)
+ggsave("plots/Volcano.GMM.WT-vs-Comp.pdf",p,width=16,height=12)
 p <- as_tibble(counts(ddsGMM[best_genes$ENSEMBL, ], normalize = TRUE),
                rownames = 'ENSEMBL') %>% 
   pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
@@ -180,10 +185,14 @@ res_tbl <- as_tibble(res, rownames = "ENSEMBL")
 p <- EnhancedVolcano(res,
                 lab = rownames(res),
                 x = 'log2FoldChange',
+                FCcutoff = 2, 
+                pCutoff = 1e-10,
+                labSize = 3.0,
                 title = 'WT versus OverExpression',
+                legendPosition = 'right',
                 y = 'pvalue')
 
-ggsave("plots/Volcano.GMM.WT-vs-OE.pdf",p,width=6,height=8)
+ggsave("plots/Volcano.GMM.WT-vs-OE.pdf",p,width=16,height=12)
 p <- as_tibble(counts(ddsGMM[best_genes$ENSEMBL, ], normalize = TRUE),
                rownames = 'ENSEMBL') %>% 
   pivot_longer(names_to = "sample", values_to = "counts", -ENSEMBL) %>%  
@@ -240,10 +249,14 @@ res_tbl <- as_tibble(res, rownames = "ENSEMBL")
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
+                   FCcutoff = 2, 
+                   pCutoff = 1e-10,
+                   labSize = 3.0,
                    title = 'WT GMM versus Azole',
+                   legendPosition = 'right',
                    y = 'pvalue')
 
-ggsave("plots/Volcano.WT_GMM-vs-Azole.pdf",p,width=6,height=8)
+ggsave("plots/Volcano.WT_GMM-vs-Azole.pdf",p,width=16,height=12)
 res_tbl <- as_tibble(res, rownames = "ENSEMBL")
 best_genes <- res_tbl %>%
   arrange(padj)  %>%
@@ -298,10 +311,14 @@ res_tbl <- as_tibble(res, rownames = "ENSEMBL")
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
+                   FCcutoff = 2, 
+                   pCutoff = 1e-10,
+                   labSize = 3.0,
                    title = 'Del GMM versus Azole',
+                   legendPosition = 'right',
                    y = 'pvalue')
 
-ggsave("plots/Volcano.Del_GMM-vs-Azole.pdf",p,width=6,height=8)
+ggsave("plots/Volcano.Del_GMM-vs-Azole.pdf",p,width=16,height=12)
 
 
 best_genes <- res_tbl %>%
@@ -437,8 +454,14 @@ res_tbl <- as_tibble(res, rownames = "ENSEMBL")
 p<-EnhancedVolcano(res,
                    lab = rownames(res),
                    x = 'log2FoldChange',
+                   FCcutoff = 2, 
+                   pCutoff = 1e-10,
+                   labSize = 3.0,
+                   labCol = 'goldenrod',
+                   labFace = 'bold',
                    title = 'Azole WT versus Comp',
-                   selectLab = c('AFUB_000050-T1', 'AFUB_000060-T1'),
+                   selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
+                   legendPosition = 'right',
                    y = 'pvalue')
 
 ggsave("plots/Volcano.Azole.WT-vs-Comp.pdf",p,width=6,height=8)
@@ -467,11 +490,17 @@ res_tbl <- as_tibble(res, rownames = "ENSEMBL")
 p <- EnhancedVolcano(res,
                      lab = rownames(res),
                      x = 'log2FoldChange',
+                     FCcutoff = 2, 
+                     pCutoff = 1e-10,
+                     labSize = 3.0,
+                     labCol = 'goldenrod',
+                     labFace = 'bold',
                      title = 'Azole WT versus OverExpression',
-                     selectLab = c('AFUB_000050-T1', 'AFUB_000060-T1'),
+                     selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
+                     legendPosition = 'right',
                      y = 'pvalue')
 
-ggsave("plots/Volcano.Azole.WT-vs-OE.pdf",p,width=6,height=8)
+ggsave("plots/Volcano.Azole.WT-vs-OE.pdf",p,width=16,height=12)
 
 p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
                rownames = 'ENSEMBL') %>% 
@@ -488,3 +517,4 @@ p <- as_tibble(counts(ddsAzole[best_genes$ENSEMBL, ], normalize = TRUE),
         legend.title = element_text(size = 7))
 p
 ggsave("plots/barPlot.Azole.top_9_WT_v_OE.pdf",p,width=16,height=12)
+
