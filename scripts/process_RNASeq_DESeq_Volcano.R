@@ -197,6 +197,8 @@ p <- EnhancedVolcano(res,
                 labFace = 'bold',
                 title = 'WT versus OverExpression',
                 legendPosition = 'right',
+                gridlines.major = FALSE,
+                gridlines.minor = FALSE,
                 y = 'pvalue')
 
 ggsave("plots/Volcano.GMM.WT-vs-OE.pdf",p,width=16,height=12)
@@ -427,6 +429,8 @@ p<-EnhancedVolcano(res,
                    labFace = 'bold',
                    title = 'Azole WT versus Delta',
                    y = 'pvalue',
+                   gridlines.major = FALSE,
+                   gridlines.minor = FALSE,
                    legendPosition = 'right')
 
 ggsave("plots/Volcano.Azole.WT-vs-Delta.pdf",p,width=16,height=12)
@@ -502,6 +506,8 @@ p<-EnhancedVolcano(res,
                    title = 'Azole WT versus Comp',
                    selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
                    legendPosition = 'right',
+                   gridlines.major = FALSE,
+                   gridlines.minor = FALSE,
                    y = 'pvalue')
 
 ggsave("plots/Volcano.Azole.WT-vs-Comp.callOut.pdf",p,width=16,height=12)
