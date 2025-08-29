@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-LABELSIZE=4.0
+LABELSIZE=6.0
 PCUTOFF=1e-10
 FCCHANGE=2.0
 # Here is a list of volcano plots:
@@ -85,6 +85,7 @@ ddsGMM <- DESeq(ddsGMM)
 sizeFactors(ddsGMM)
 write_tsv(as_tibble(counts(ddsGMM, normalize = TRUE),rownames = 'TRANSCRIPT'),
           'results/GMM.Genotypes_normalized_counts.tsv')
+write_tsv(as_tibble(fpm(ddsGMM),rownames='TRANSCRIPT'), 'results/GMM.Genotypes.FPM.tsv')
 res <- results(ddsGMM)
 
 res <- results(ddsGMM,
@@ -103,7 +104,9 @@ p<-EnhancedVolcano(res,
                   title = 'WT versus Delta',
                   legendPosition = 'right',
                   colAlpha = 1,
-                  y = 'pvalue'
+                  y = 'pvalue',
+                  gridlines.major = FALSE,
+                  gridlines.minor = FALSE,
                   )
 ggsave("plots/Volcano.GMM.WT-vs-Delta.pdf",p,width=16,height=12)
 
@@ -158,6 +161,8 @@ p<-EnhancedVolcano(res,
                    x = 'log2FoldChange',
                    title = 'WT versus Comp',
                    legendPosition = 'right',
+                   gridlines.major = FALSE,
+                   gridlines.minor = FALSE,
                    y = 'pvalue')
 
 ggsave("plots/Volcano.GMM.WT-vs-Comp.pdf",p,width=16,height=12)
@@ -241,6 +246,7 @@ sizeFactors(ddsWT)
 ddsWT <- DESeq(ddsWT)
 write_tsv(as_tibble(counts(ddsWT, normalize = TRUE),rownames = 'TRANSCRIPT'),
           'results/WT.GMM_v_Azole.normalized_counts.tsv')
+write_tsv(as_tibble(fpm(ddsWT),rownames='TRANSCRIPT'), 'results/WT.GMM_v_Azole.FPM.tsv')
 res <- results(ddsWT)
 
 # 4. WT GMM vs WT drug
@@ -260,6 +266,8 @@ p<-EnhancedVolcano(res,
                    labFace = 'bold',
                    title = 'WT GMM versus Azole',
                    legendPosition = 'right',
+                   gridlines.major = FALSE,
+                   gridlines.minor = FALSE,
                    y = 'pvalue')
 
 ggsave("plots/Volcano.WT_GMM-vs-Azole.pdf",p,width=16,height=12)
@@ -304,6 +312,7 @@ ddsDel <- estimateDispersions(ddsDel)
 sizeFactors(ddsDel)
 write_tsv(as_tibble(counts(ddsDel, normalize = TRUE),rownames = 'TRANSCRIPT'),
           'results/Delta.GMM_v_Azole.normalized_counts.tsv')
+write_tsv(as_tibble(fpm(ddsDel),rownames='TRANSCRIPT'), 'results/Delta.GMM_v_Azole.FPM.tsv')
 
 ddsDel <- DESeq(ddsDel)
 res <- results(ddsDel)
@@ -325,6 +334,8 @@ p<-EnhancedVolcano(res,
                    labFace = 'bold',
                    title = 'Del GMM versus Azole',
                    legendPosition = 'right',
+                   gridlines.major = FALSE,
+                   gridlines.minor = FALSE,
                    y = 'pvalue')
 
 ggsave("plots/Volcano.Del_GMM-vs-Azole.pdf",p,width=16,height=12)
@@ -374,6 +385,7 @@ sizeFactors(ddsAzole)
 
 write_tsv(as_tibble(counts(ddsAzole, normalize = TRUE),rownames = 'TRANSCRIPT'),
           'results/Azole.Genotype_compare.normalized_counts.tsv')
+write_tsv(as_tibble(fpm(ddsAzole),rownames='TRANSCRIPT'), 'results/Azole.Genotype_compare.FPM.tsv')
 
 ddsAzole <- DESeq(ddsAzole)
 res <- results(ddsAzole)
@@ -400,6 +412,8 @@ p<-EnhancedVolcano(res,
                    drawConnectors = TRUE,
                    widthConnectors = 0.5,
                    colAlpha = 4/5,
+                   gridlines.major = FALSE,
+                   gridlines.minor = FALSE,
                   )
 
 ggsave("plots/Volcano.Azole.WT-vs-Delta.callOut.pdf",p,width=16,height=12)
@@ -471,6 +485,8 @@ p<-EnhancedVolcano(res,
                    labFace = 'bold',
                    title = 'Azole WT versus Comp',
                    legendPosition = 'right',
+                   gridlines.major = FALSE,
+                   gridlines.minor = FALSE,
                    y = 'pvalue')
 
 ggsave("plots/Volcano.Azole.WT-vs-Comp.pdf",p,width=16,height=12)
@@ -521,6 +537,8 @@ p <- EnhancedVolcano(res,
                      labFace = 'bold',
                      title = 'Azole WT versus OverExpression',
                      legendPosition = 'right',
+                     gridlines.major = FALSE,
+                     gridlines.minor = FALSE,
                      y = 'pvalue')
 
 ggsave("plots/Volcano.Azole.WT-vs-OE.pdf",p,width=16,height=12)
@@ -536,6 +554,8 @@ p <- EnhancedVolcano(res,
                      title = 'Azole WT versus OverExpression',
                      selectLab = c('AFUB_000050-T', 'AFUB_000060-T'),
                      legendPosition = 'right',
+                     gridlines.major = FALSE,
+                     gridlines.minor = FALSE,
                      y = 'pvalue')
 
 ggsave("plots/Volcano.Azole.WT-vs-OE.callOut.pdf",p,width=16,height=12)
